@@ -1,0 +1,23 @@
+<launch>
+<node pkg="rosserial_python" type="serial_node.py" name="back_motor" output="screen">
+<param name="port" value="/dev/ttyACM0"/>
+<param name="baud" value="57600"/>
+</node>
+<node pkg="rosserial_python" type="serial_node.py" name="front_motor" output="screen">
+<param name="port" value="/dev/ttyACM1"/>
+<param name="baud" value="57600"/>
+</node>
+<node pkg="rosserial_python" type="serial_node.py" name="imu_data" output="screen">
+<param name="port" value="/dev/ttyACM2"/>
+<param name="baud" value="57600"/>
+</node>
+
+  <node pkg="testing_cpp" type="imu_converter" name="imu_converters" />
+    <node pkg="testing_cpp" type="odom" name="odom_converters" />
+    <node pkg="tf" type="static_transform_publisher" name="imu_datas" args="0 0 0.05 0 0 0 /base_link /imu_data  50"/>
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true" >
+  <rosparam file="$(find testing_cpp)/configue/ekf.yaml" command="load" />
+	<remap from="/odometry/filtered" to="/odom"/>
+    </node>
+     
+</launch>

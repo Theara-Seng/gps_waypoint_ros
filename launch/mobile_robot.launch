@@ -1,0 +1,17 @@
+ <launch>
+<include file="$(find openni_launch)/launch/openni.launch"/> 
+    <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" args="image:=/camera/depth/image_raw" respawn="true"> 
+       <param name="output_frame_id" value="/camera_depth_frame"/>
+       <param name="scan_height" value="10"/> 
+        <param name="scan_time" value="0.2"/>
+        <param name="range_min" value="0.20"/>
+        <param name="range_max" value="20.0"/>
+        <param name="min_height" value="0.10"/>
+        <param name="max_height" value="10"/>
+        <remap from="image" to="/camera/depth/image_raw"/>
+        <remap from="camera_info" to="/camera/depth/camera_info"/>
+        <remap from="/scan" to="scan"/> 
+    </node>
+     <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0 0 0.1 0 0 0  /base_link /camera_link  50"/>
+ </launch>
+

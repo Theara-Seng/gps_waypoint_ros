@@ -1,0 +1,54 @@
+<launch>
+<node pkg="rosserial_python" type="serial_node.py" name="back_motor" output="screen">
+<param name="port" value="/dev/ttyACM0"/>
+<param name="baud" value="57600"/>
+</node>
+<node pkg="rosserial_python" type="serial_node.py" name="front_motor" output="screen">
+<param name="port" value="/dev/ttyACM1"/>
+<param name="baud" value="57600"/>
+</node>
+<node pkg="rosserial_python" type="serial_node.py" name="imu_data" output="screen">
+<param name="port" value="/dev/ttyACM2"/>
+<param name="baud" value="57600"/>
+</node>
+
+    <node pkg="testing_cpp" type="imu_converter" name="imu_converters" />
+    <node pkg="testing_cpp" type="odom" name="odom_converters" />
+    <node pkg="testing_cpp" type="gps_converters" name="gps_converters" />
+    <node pkg="tf" type="static_transform_publisher" name="imu_datas" args="0 0 0.05 0 0 0 /base_link /imu_data  50"/>
+    <node pkg="tf" type="static_transform_publisher" name="gps_data" args="0 0 0.1 0 0 0 /base_link   /gps_data  50"/>
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true" >
+  <rosparam file="$(find testing_cpp)/configue/ekf.yaml" command="load" />
+		
+    </node>
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization_global" output="screen">
+		<rosparam command="load" file="$(find testing_cpp)/configue/ekf1.yaml" />
+		<remap from="/odometry/filtered" to="/odometry/filtered/global"/>
+	</node>
+
+	<!-- NavSat Transform -->
+	<node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform" output="screen">
+		<param name="magnetic_declination_radians" value="0"/> <!-- gives true north anyways -->
+		<param name="yaw_offset" value="1.57"/>
+		<param name="zero_altitude" value="true"/> <!-- 88m ish above, I think? -->
+		<param name="broadcast_utm_transform" value="true"/>
+		<param name="publish_filtered_gps" value="true"/>
+
+		<remap from="imu/data" to="/imu_data" />
+		<remap from="gps/fix" to="/gps_datas" />
+		<remap from="/odometry/filtered" to="/odometry/filtered/global"/>
+	</node>
+       <!-- <node name="delta_lidar"    pkg="delta_lidar"  type="delta_lidar_node" output="screen">
+ 	 <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>
+  	<param name="frame_id"            type="string" value="laser"/>
+ 	</node>
+
+	<include file="$(find delta_lidar)/launch/slam.launch" />
+	 Show Path -->
+	<node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server">
+		<param name="target_frame_name" value="map"/>
+		<param name="source_frame_name" value="base_link"/>
+	</node>
+        <node type="rviz" name="rviz" pkg="rviz" args="-d $(find testing_cpp)/rviz/fusion_gps.rviz" />
+</launch>
