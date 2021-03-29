@@ -32,7 +32,7 @@
 		<param name="magnetic_declination_radians" value="0"/> <!-- gives true north anyways -->
 		<param name="yaw_offset" value="1.57"/>
 		<param name="zero_altitude" value="true"/> <!-- 88m ish above, I think? -->
-		<param name="broadcast_utm_transform" value="true"/>
+		<param name="broadcast_cartesian_transform" value="true"/>
 		<param name="publish_filtered_gps" value="true"/>
 
 		<remap from="imu/data" to="/imu_data" />

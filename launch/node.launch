@@ -7,10 +7,10 @@
 <param name="port" value="/dev/ttyACM1"/>
 <param name="baud" value="57600"/>
 </node>
-<node pkg="rosserial_python" type="serial_node.py" name="imu_data" output="screen">
+<!--<node pkg="rosserial_python" type="serial_node.py" name="imu_data" output="screen">
 <param name="port" value="/dev/ttyACM2"/>
 <param name="baud" value="57600"/>
-</node>
+</node>-->
 
   <node pkg="testing_cpp" type="imu_converter" name="imu_converters" />
     <node pkg="testing_cpp" type="odom" name="odom_converters" />

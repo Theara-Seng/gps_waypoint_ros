@@ -109,7 +109,7 @@ MPU6050 mpu;
 // from the FIFO. Note this also requires gravity vector calculations.
 // Also note that yaw/pitch/roll angles suffer from gimbal lock (for
 // more info, see: http://en.wikipedia.org/wiki/Gimbal_lock)
-//#define OUTPUT_READABLE_YAWPITCHROLL
+#define OUTPUT_READABLE_YAWPITCHROLL
 
 // uncomment "OUTPUT_READABLE_REALACCEL" if you want to see acceleration
 // components with gravity removed. This acceleration reference frame is
@@ -175,7 +175,9 @@ void dmpDataReady() {
 
 
 sensor_msgs::Imu imu_msgs;
+//geometry_msgs::Vector3 orient;
 ros::Publisher imu_pubs("imu_msgs", &imu_msgs);
+//ros::Publisher imu_pub("imu_data", &orient);
 // ================================================================
 // ===                      INITIAL SETUP                       ===
 // ================================================================
@@ -199,6 +201,7 @@ void setup() {
   devStatus = mpu.dmpInitialize();
    nh.initNode();
    nh.advertise(imu_pubs);
+  // nh.advertise(imu_pub);
   // supply your own gyro offsets here, scaled for min sensitivity
   mpu.setXGyroOffset(220);
   mpu.setYGyroOffset(76);
@@ -296,12 +299,11 @@ void loop() {
     mpu.dmpGetQuaternion(&q, fifoBuffer);
     mpu.dmpGetGravity(&gravity, &q);
     mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-    Serial.print("ypr\t");
-    Serial.print(ypr[0] * 180 / M_PI);
-    Serial.print("\t");
-    Serial.print(ypr[1] * 180 / M_PI);
-    Serial.print("\t");
-    Serial.println(ypr[2] * 180 / M_PI);
+   // orient.z = ypr[0] * 180 / M_PI;
+   // orient.x = ypr[1] * 180 / M_PI;
+   // orient.y = ypr[2] * 180 / M_PI;
+   // imu_pub.publish(&orient);
+
 #endif
 
 #ifdef OUTPUT_READABLE_REALACCEL

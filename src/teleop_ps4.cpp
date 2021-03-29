@@ -2,9 +2,9 @@
 #include<geometry_msgs/Twist.h>
 #include<sensor_msgs/Joy.h>
 #include<iostream>
-
+//#incsilude "eod_robot/EodMotorData.h"
 using namespace std;
-float max_linear_vel = 0.3;
+float max_linear_vel = 0.8;
 float max_angular_vel = 0.8;
 
 class TeleopJoy{
@@ -25,6 +25,7 @@ TeleopJoy::TeleopJoy()
 	n.param("axis_angular",i_velAngular,i_velAngular);
 	pub = n.advertise<geometry_msgs::Twist>("/cmd_vel",1);
 	sub = n.subscribe<sensor_msgs::Joy>("joy", 10, &TeleopJoy::callBack, this);
+//	motPub_ = n.advertise<eod_robot::EodMotorData>("eod_robot/motor_commands", 5);
 }
 
 void TeleopJoy::callBack(const sensor_msgs::Joy::ConstPtr& joy)
@@ -33,6 +34,7 @@ void TeleopJoy::callBack(const sensor_msgs::Joy::ConstPtr& joy)
 	vel.angular.z = max_angular_vel*joy->axes[0];
 	vel.linear.x = max_linear_vel*joy->axes[1];
 	pub.publish(vel);
+	  
 }
 
 int main(int argc, char** argv)
