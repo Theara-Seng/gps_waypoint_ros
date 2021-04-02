@@ -58,21 +58,30 @@ float cmd2 = 0.0;
 double Vx = 0.0;
 double Vy = 0.0;
 double Omega = 0.0;
-double gain = 3.2;
-double gain1 = 1.3;
+double gain = 12;
+double gain1 = 11.5;
+double gain2 =10.6;
 unsigned long last_time = millis();
 unsigned long dt = 0.0;
-pid pid1(33.0, 2.0, 0.0);
+pid pid1(30.0, 2.0, 0.0);
 pid pid2(30.0, 2.0, 0.0);
 
 
 void handle_cmd( const geometry_msgs::Twist& msg) {
   Vx = msg.linear.x;
   Omega = msg.angular.z;
-  
-  v_target1 = gain*(Vx+gain1*(a+b)*Omega);
-  v_target2  =gain*(Vx-gain1*(a+b)*Omega);
-
+  if (Vx >= 0 ) {
+    v_target1 = gain * (Vx + gain1 * (a + b) * Omega);
+    v_target2  = gain1 * (Vx - gain1 * (a + b) * Omega);
+  }
+  else if (Vx < 0 ) {
+    v_target1 = gain2 * (Vx + gain1 * (a + b) * Omega);
+    v_target2  = gain * (Vx - gain1 * (a + b) * Omega);
+  }
+  else{
+     v_target1 = gain * (Vx + gain1 * (a + b) * Omega);
+    v_target2  = gain * (Vx - gain1 * (a + b) * Omega);
+  }
 }
 
 ros::NodeHandle nh;
@@ -86,14 +95,14 @@ ros::Publisher speed_pub("speed_motor_front", &speed_msg);
 
 void setup() {
 
-   Serial.begin(57600);
+  Serial.begin(57600);
   for (int i = 3; i <= 10; i++) {
     pinMode(i, OUTPUT);
   }
 
   Motor1.initPins();
   Motor2.initPins();
- 
+
 
   nh.initNode();
   nh.subscribe(speeds);
@@ -109,12 +118,12 @@ void loop() {
     enc_value1 = Motor1.enc.read();
     enc_value2 = Motor2.enc.read();
 
-    dl1 = PI*0.27*(enc_value1 - enc_last_value1)/360.0 ;
+    dl1 = PI * 0.27 * (enc_value1 - enc_last_value1) / 1440.0 ;
     v1 =  1000 * dl1 / dt;
     enc_last_value1 = enc_value1;
 
- 
-    dl2 = PI*0.27*(enc_value2 - enc_last_value2) /360.0;
+
+    dl2 = PI * 0.27 * (enc_value2 - enc_last_value2) / 1440.0;
     v2 = 1000 * dl2 / dt;
     enc_last_value2 = enc_value2;
 
@@ -142,15 +151,15 @@ void loop() {
     Serial.print(";");
     Serial.print("l2=");
     Serial.println(l2);
-    speed_msg.vector.x=v1;
-    speed_msg.vector.y=v2;
-    pose_msg.vector.x=l1;
-    pose_msg.vector.y=l2;
+    speed_msg.vector.x = v1;
+    speed_msg.vector.y = v2;
+    pose_msg.vector.x = l1;
+    pose_msg.vector.y = l2;
     pose_pub.publish(&pose_msg);
     speed_pub.publish(&speed_msg);
-    
+
   }
-   
+
 
 
 
