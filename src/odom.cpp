@@ -3,6 +3,7 @@
 #include <geometry_msgs/Vector3.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
+#include <testing_cpp/Speed.h>
 //void MotorBackCallback(const std_msgs::Int8::ConstPtr& msg){
    
 // 	ROS_INFO("The value is [%d]", msg->data);
@@ -27,10 +28,10 @@
 	const float a=0.4;
 	const float b=0.4;
 
-void SpeedMotorFrontCallback(const geometry_msgs::Vector3Stamped& speed_front)
+void SpeedCallback(const testing_cpp::Speed& speed_msg)
 {
-       V1=speed_front.vector.x;
-       V2=speed_front.vector.y;
+       V1=speed_msg.v1;
+       V2=speed_msg.v2;
        ROS_INFO("Speed Motor 1= %f", V1);
        ROS_INFO("Speed Motor 2= %f", V2);
        
@@ -66,7 +67,7 @@ ros::NodeHandle nh;
 ros::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 50);
 //ros::Subscriber Speed_motor_back=nh.subscribe("speed_motor_back",50,SpeedMotorBackCallback);
 //ros::Subscriber Position_motor_back=nh.subscribe("position_motor_back",1000,PoseMotorBackCallback);
-ros::Subscriber Speed_motor_front=nh.subscribe("speed_motor_front",50,SpeedMotorFrontCallback);
+ros::Subscriber Speed=nh.subscribe("speed",50,SpeedCallback);
 //ros::Subscriber theta_robot=nh.subscribe("imu_data",50, angleCallback);
 //ros::Subscriber Position_motor_front=nh.subscribe("position_motor_front",1000,PoseMotorFrontCallback);
  

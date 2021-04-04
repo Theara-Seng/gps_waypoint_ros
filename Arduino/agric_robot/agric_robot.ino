@@ -7,7 +7,8 @@
 #endif
 #include <math.h>
 #include <ros.h>
-#include <geometry_msgs/Vector3Stamped.h>
+#include <testing_cpp/Speed.h>
+#include <testing_cpp/Position.h>
 #include <geometry_msgs/Twist.h>
 
 #include <Encoder.h>
@@ -87,10 +88,10 @@ void handle_cmd( const geometry_msgs::Twist& msg) {
 ros::NodeHandle nh;
 
 ros::Subscriber<geometry_msgs::Twist> speeds("cmd_vel", handle_cmd);
-geometry_msgs::Vector3Stamped pose_msg;
-geometry_msgs::Vector3Stamped speed_msg;
+testing_cpp::Position pose_msg;
+testing_cpp::Speed speed_msg;
 ros::Publisher pose_pub("position", &pose_msg);
-ros::Publisher speed_pub("speed_motor_front", &speed_msg);
+ros::Publisher speed_pub("speed", &speed_msg);
 
 
 void setup() {
@@ -151,10 +152,10 @@ void loop() {
     Serial.print(";");
     Serial.print("l2=");
     Serial.println(l2);
-    speed_msg.vector.x = v1;
-    speed_msg.vector.y = v2;
-    pose_msg.vector.x = l1;
-    pose_msg.vector.y = l2;
+    speed_msg.v1 = v1;
+    speed_msg.v1 = v2;
+    pose_msg.l1 = l1;
+    pose_msg.l2 = l2;
     pose_pub.publish(&pose_msg);
     speed_pub.publish(&speed_msg);
 
